@@ -235,39 +235,6 @@ public class CollectionProtocolRegistrationServiceImpl implements CollectionProt
 	
 	@Override
 	@PlusTransactional
-	public ResponseEvent<ConsentDetail> getConsents(RequestEvent<RegistrationQueryCriteria> req) {
-		try {
-			RegistrationQueryCriteria crit = req.getPayload();
-			AccessCtrlMgr.getInstance().ensureReadCprRights(crit.getCprId());
-			CollectionProtocolRegistration cpr = getCpr(crit.getCprId(), crit.getCpId(), crit.getPpid());
-			return ResponseEvent.response(ConsentDetail.fromCpr(cpr));
-		} catch (OpenSpecimenException ose) {
-			return ResponseEvent.error(ose);
-		} catch (Exception e) {
-			return ResponseEvent.serverError(e);
-		}
-	}
-	
-	@Override
-	@PlusTransactional
-	public ResponseEvent<ConsentDetail> saveConsents(RequestEvent<ConsentDetail> req) {
-		try {
-			ConsentDetail consentDetail = req.getPayload();
-			CollectionProtocolRegistration existing = getCpr(consentDetail.getCprId(), null, null);
-			AccessCtrlMgr.getInstance().ensureUpdateCprRights(existing);
-			
-			CollectionProtocolRegistration cpr = cprFactory.updateConsents(existing, consentDetail);
-			existing.updateConsents(cpr);
-			return ResponseEvent.response(ConsentDetail.fromCpr(existing));
-		} catch (OpenSpecimenException ose) {
-			return ResponseEvent.error(ose);
-		} catch (Exception e) {
-			return ResponseEvent.serverError(e);
-		}
-	}
-
-	@Override
-	@PlusTransactional
 	public ResponseEvent<Boolean> deleteConsentForm(RequestEvent<RegistrationQueryCriteria> req) {
 		try {
 			Long cprId = req.getPayload().getCprId();
@@ -299,7 +266,40 @@ public class CollectionProtocolRegistrationServiceImpl implements CollectionProt
 		} catch (Exception e) {
 			return ResponseEvent.serverError(e);
 		}
-	}	
+	}
+	
+	@Override
+	@PlusTransactional
+	public ResponseEvent<ConsentDetail> getConsents(RequestEvent<RegistrationQueryCriteria> req) {
+		try {
+			RegistrationQueryCriteria crit = req.getPayload();
+			AccessCtrlMgr.getInstance().ensureReadCprRights(crit.getCprId());
+			CollectionProtocolRegistration cpr = getCpr(crit.getCprId(), crit.getCpId(), crit.getPpid());
+			return ResponseEvent.response(ConsentDetail.fromCpr(cpr));
+		} catch (OpenSpecimenException ose) {
+			return ResponseEvent.error(ose);
+		} catch (Exception e) {
+			return ResponseEvent.serverError(e);
+		}
+	}
+	
+	@Override
+	@PlusTransactional
+	public ResponseEvent<ConsentDetail> saveConsents(RequestEvent<ConsentDetail> req) {
+		try {
+			ConsentDetail consentDetail = req.getPayload();
+			CollectionProtocolRegistration existing = getCpr(consentDetail.getCprId(), null, null);
+			AccessCtrlMgr.getInstance().ensureUpdateCprRights(existing);
+			
+			CollectionProtocolRegistration cpr = cprFactory.createCpr(existing, consentDetail);
+			existing.updateConsents(cpr);
+			return ResponseEvent.response(ConsentDetail.fromCpr(existing));
+		} catch (OpenSpecimenException ose) {
+			return ResponseEvent.error(ose);
+		} catch (Exception e) {
+			return ResponseEvent.serverError(e);
+		}
+	}
 
 	@Override
 	@PlusTransactional

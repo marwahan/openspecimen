@@ -8,5 +8,5 @@ import com.krishagni.catissueplus.core.biospecimen.events.ConsentDetail;
 public interface CollectionProtocolRegistrationFactory {
 	public CollectionProtocolRegistration createCpr(CollectionProtocolRegistrationDetail details);
 	
-	public CollectionProtocolRegistration updateConsents(CollectionProtocolRegistration existing, ConsentDetail consentDetails);
+	public CollectionProtocolRegistration createCpr(CollectionProtocolRegistration existing, ConsentDetail consentDetails);
 }

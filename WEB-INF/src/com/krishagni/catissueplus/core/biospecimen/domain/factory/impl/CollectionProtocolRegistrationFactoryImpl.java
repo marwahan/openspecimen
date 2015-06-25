@@ -46,14 +46,13 @@ public class CollectionProtocolRegistrationFactoryImpl implements CollectionProt
 	}
 	
 	@Override
-	public CollectionProtocolRegistration updateConsents(
+	public CollectionProtocolRegistration createCpr(
 			CollectionProtocolRegistration existing,
 			ConsentDetail consentDetails) {
 		OpenSpecimenException ose = new OpenSpecimenException(ErrorType.USER_ERROR);
 		
 		CollectionProtocolRegistration cpr = new CollectionProtocolRegistration();
 		BeanUtils.copyProperties(existing, cpr);
-		System.out.println(cpr.getId());
 		setConsents(consentDetails, cpr, ose);
 		
 		ose.checkAndThrow();
@@ -69,7 +68,7 @@ public class CollectionProtocolRegistrationFactoryImpl implements CollectionProt
 		setRegDate(detail, cpr, ose);
 		setActivityStatus(detail, cpr, ose);
 		setCollectionProtocol(detail, cpr, ose);
-		setConsents(detail, cpr, ose);
+		//setConsents(detail, cpr, ose);
 		setPpid(detail, cpr, ose);
 		setParticipant(detail, cpr, ose);
 		
@@ -139,13 +138,6 @@ public class CollectionProtocolRegistrationFactoryImpl implements CollectionProt
 		cpr.setPpid(detail.getPpid());
 	}
 	
-	private void setConsents(
-			CollectionProtocolRegistrationDetail detail,
-			CollectionProtocolRegistration cpr, 
-			OpenSpecimenException ose) {
-		setConsents(detail.getConsentDetails(), cpr, ose);
-	}
-
 	private void setConsents(
 			ConsentDetail consentDetail,
 			CollectionProtocolRegistration cpr, 
