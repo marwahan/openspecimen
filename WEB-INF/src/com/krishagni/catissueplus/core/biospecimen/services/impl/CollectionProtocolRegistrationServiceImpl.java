@@ -28,6 +28,7 @@ import com.krishagni.catissueplus.core.biospecimen.domain.factory.CpeErrorCode;
 import com.krishagni.catissueplus.core.biospecimen.domain.factory.CprErrorCode;
 import com.krishagni.catissueplus.core.biospecimen.domain.factory.VisitErrorCode;
 import com.krishagni.catissueplus.core.biospecimen.events.CollectionProtocolRegistrationDetail;
+import com.krishagni.catissueplus.core.biospecimen.events.ConsentDetail;
 import com.krishagni.catissueplus.core.biospecimen.events.ConsentFormDetail;
 import com.krishagni.catissueplus.core.biospecimen.events.ParticipantDetail;
 import com.krishagni.catissueplus.core.biospecimen.events.ParticipantRegistrationsList;
@@ -58,8 +59,8 @@ public class CollectionProtocolRegistrationServiceImpl implements CollectionProt
 	
 	private ConfigurationServiceImpl cfgSvc;
 	
-	private static final Pattern digitsPtrn = Pattern.compile("%(\\d+)d");  
-	
+	private static final Pattern digitsPtrn = Pattern.compile("%(\\d+)d");
+
 	public void setDaoFactory(DaoFactory daoFactory) {
 		this.daoFactory = daoFactory;
 	}
@@ -229,6 +230,39 @@ public class CollectionProtocolRegistrationServiceImpl implements CollectionProt
 			return ResponseEvent.serverError(e);
 		} finally {
 			IOUtils.closeQuietly(outputStream);
+		}
+	}
+	
+	@Override
+	@PlusTransactional
+	public ResponseEvent<ConsentDetail> getConsents(RequestEvent<RegistrationQueryCriteria> req) {
+		try {
+			RegistrationQueryCriteria crit = req.getPayload();
+			AccessCtrlMgr.getInstance().ensureReadCprRights(crit.getCprId());
+			CollectionProtocolRegistration cpr = getCpr(crit.getCprId(), crit.getCpId(), crit.getPpid());
+			return ResponseEvent.response(ConsentDetail.fromCpr(cpr));
+		} catch (OpenSpecimenException ose) {
+			return ResponseEvent.error(ose);
+		} catch (Exception e) {
+			return ResponseEvent.serverError(e);
+		}
+	}
+	
+	@Override
+	@PlusTransactional
+	public ResponseEvent<ConsentDetail> saveConsents(RequestEvent<ConsentDetail> req) {
+		try {
+			ConsentDetail consentDetail = req.getPayload();
+			CollectionProtocolRegistration existing = getCpr(consentDetail.getCprId(), null, null);
+			AccessCtrlMgr.getInstance().ensureUpdateCprRights(existing);
+			
+			CollectionProtocolRegistration cpr = cprFactory.updateConsents(existing, consentDetail);
+			existing.updateConsents(cpr);
+			return ResponseEvent.response(ConsentDetail.fromCpr(existing));
+		} catch (OpenSpecimenException ose) {
+			return ResponseEvent.error(ose);
+		} catch (Exception e) {
+			return ResponseEvent.serverError(e);
 		}
 	}
 

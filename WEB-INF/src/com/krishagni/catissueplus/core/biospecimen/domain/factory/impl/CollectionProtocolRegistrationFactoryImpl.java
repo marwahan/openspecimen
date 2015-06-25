@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 
 import com.krishagni.catissueplus.core.administrative.domain.User;
 import com.krishagni.catissueplus.core.biospecimen.domain.CollectionProtocol;
@@ -43,7 +44,22 @@ public class CollectionProtocolRegistrationFactoryImpl implements CollectionProt
 	public void setDaoFactory(DaoFactory daoFactory) {
 		this.daoFactory = daoFactory;
 	}
-
+	
+	@Override
+	public CollectionProtocolRegistration updateConsents(
+			CollectionProtocolRegistration existing,
+			ConsentDetail consentDetails) {
+		OpenSpecimenException ose = new OpenSpecimenException(ErrorType.USER_ERROR);
+		
+		CollectionProtocolRegistration cpr = new CollectionProtocolRegistration();
+		BeanUtils.copyProperties(existing, cpr);
+		System.out.println(cpr.getId());
+		setConsents(consentDetails, cpr, ose);
+		
+		ose.checkAndThrow();
+		return cpr;
+	}
+	
 	@Override
 	public CollectionProtocolRegistration createCpr(CollectionProtocolRegistrationDetail detail) {
 		OpenSpecimenException ose = new OpenSpecimenException(ErrorType.USER_ERROR);
@@ -122,9 +138,16 @@ public class CollectionProtocolRegistrationFactoryImpl implements CollectionProt
 			OpenSpecimenException ose) {
 		cpr.setPpid(detail.getPpid());
 	}
-
+	
 	private void setConsents(
 			CollectionProtocolRegistrationDetail detail,
+			CollectionProtocolRegistration cpr, 
+			OpenSpecimenException ose) {
+		setConsents(detail.getConsentDetails(), cpr, ose);
+	}
+
+	private void setConsents(
+			ConsentDetail consentDetail,
 			CollectionProtocolRegistration cpr, 
 			OpenSpecimenException ose) {
 		if (cpr.getCollectionProtocol() == null) {
@@ -136,7 +159,6 @@ public class CollectionProtocolRegistrationFactoryImpl implements CollectionProt
 			return;
 		}
 
-		ConsentDetail consentDetail = detail.getConsentDetails();
 		if (consentDetail == null) {
 			return;
 		}
@@ -226,4 +248,5 @@ public class CollectionProtocolRegistrationFactoryImpl implements CollectionProt
 		
 		cpr.setParticipant(participant);
 	}
+
 }

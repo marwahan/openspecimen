@@ -218,7 +218,7 @@
       "signed_consent_form": "Signed Consent Form",
       "deleting_consent_form": "Deleting Signed Consent Form",
       "confirm_delete_consent_form": "Are you sure you want to delete {{consentDocumentName}}?",
-      "no_consent": "No consents specified to clinical study. Do you want to add now?",
+      "no_consent": "No consents specified to clinical study.",
       "consents": "Consents",
       "consent": "Consent",
       "response": "Response",
@@ -295,7 +295,7 @@
 
     "spr": "Surgical Pathology Report",
     "spr_uploaded": "Surgical pathology report {{file}} uploaded successfully.",
-    "no_spr": "No surgical pathology report uploaded. Do you want to upload now?",
+    "no_spr": "No surgical pathology report uploaded.",
     "deleting_spr": "Deleting Surgical Pathology Report",
     "confirm_delete_spr": "Are you sure you want to delete {{sprName}} ?",
     "spr_locked": "Surgical pathology report locked successfully.",
