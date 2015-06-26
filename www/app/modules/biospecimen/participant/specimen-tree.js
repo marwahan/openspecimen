@@ -239,7 +239,7 @@ angular.module('os.biospecimen.participant.specimen-tree',
             })
           } else {
             SpecimensHolder.setSpecimens(selectedSpecimens);
-            $state.go('specimen-list-addedit', {listId: ''});
+            $state.go('specimen-list-addedit', {listId: '', page: 'specimen'});
           }
         }
 

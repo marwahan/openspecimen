@@ -14,7 +14,7 @@ angular.module('os.biospecimen.specimenlist',
         parent: 'signed-in'
       })
       .state('specimen-list-addedit', {
-        url: '/specimen-list-addedit/:listId',
+        url: '/specimen-list-addedit/:listId?page',
         templateUrl: 'modules/biospecimen/specimen-list/addedit.html',
         resolve: {
           list: function($stateParams, SpecimenList) {

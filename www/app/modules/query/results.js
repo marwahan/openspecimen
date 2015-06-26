@@ -38,7 +38,7 @@ angular.module('os.query.results', ['os.query.models'])
 
     function executeQuery(editMode) {
       var queryCtx = QueryCtxHolder.getQueryCtx();
-      if (!!queryCtx && $scope.queryCtx.id == queryCtx.id) {
+      if ($stateParams.isRedirected && !!queryCtx) {
         $scope.queryCtx = queryCtx;
         editMode = true;
       }
@@ -312,7 +312,7 @@ angular.module('os.query.results', ['os.query.models'])
     $scope.createNewSpecimenList = function() {
       QueryCtxHolder.setQueryCtx($scope.queryCtx);
       SpecimensHolder.setSpecimens(getSelectedSpecimens());
-      $state.go('specimen-list-addedit', {listId: ''});
+      $state.go('specimen-list-addedit', {listId: '', page: 'query'});
     };
  
     init();

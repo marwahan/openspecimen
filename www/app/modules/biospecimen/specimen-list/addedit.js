@@ -1,6 +1,6 @@
 angular.module('os.biospecimen.specimenlist.addedit', ['os.biospecimen.models'])
   .controller('AddEditSpecimenListCtrl', function(
-    $scope, $state, list, SpecimenList, SpecimensHolder, DeleteUtil, Alerts) {
+    $scope, $state, $stateParams, list, SpecimenList, SpecimensHolder, QueryCtxHolder, DeleteUtil, Alerts) {
  
     function init() { 
       $scope.list = list;
@@ -39,10 +39,8 @@ angular.module('os.biospecimen.specimenlist.addedit', ['os.biospecimen.models'])
         function(savedList) {
           if ($scope.isQueryOrSpecimenPage) {
             Alerts.success('specimen_list.specimens_added', {name: savedList.name});
-            $scope.back();
-          } else {
-            $state.go('specimen-list', {listId: savedList.id});
           }
+          $scope.back();
         }
       );
     }
@@ -52,6 +50,18 @@ angular.module('os.biospecimen.specimenlist.addedit', ['os.biospecimen.models'])
         onDeleteState: 'specimen-list',
         deleteWithoutCheck: true
       });
+    }
+
+    $scope.back = function() {
+      if (!$stateParams.page) {
+        $state.go('specimen-list', {listId: $scope.list.id});
+      } else if ($stateParams.page == 'query') {
+        var queryCtx = QueryCtxHolder.getQueryCtx();
+        params = {queryId: queryCtx.id, isRedirected: "true"};
+        $state.go('query-results', params);
+      } else {
+        $scope.$parent.back(); 
+      }
     }
 
     init();

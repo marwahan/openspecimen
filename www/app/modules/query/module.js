@@ -18,7 +18,7 @@ angular.module('os.query',
     'os.query.defineview',
     'os.query.parameterized',
     'os.query.lookup',
-    'os.query.queryctxholder'
+    'os.query.ctxholder'
   ]
 ).config(function($stateProvider) {
    $stateProvider
@@ -58,7 +58,7 @@ angular.module('os.query',
        parent: 'query-root'
      })  
      .state('query-results', {
-       url: '/results?queryId&editMode',
+       url: '/results?queryId&editMode&isRedirected',
        templateUrl: 'modules/query/results.html',
        controller: 'QueryResultsCtrl',
        resolve: {

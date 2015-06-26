@@ -1,4 +1,4 @@
-angular.module("os.query.queryctxholder", [])
+angular.module("os.query.ctxholder", [])
   .factory("QueryCtxHolder", function() {
      this.queryCtx = undefined;
 
