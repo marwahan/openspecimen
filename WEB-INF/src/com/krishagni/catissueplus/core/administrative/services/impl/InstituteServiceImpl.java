@@ -13,6 +13,7 @@ import com.krishagni.catissueplus.core.administrative.domain.factory.InstituteEr
 import com.krishagni.catissueplus.core.administrative.domain.factory.InstituteFactory;
 import com.krishagni.catissueplus.core.administrative.events.InstituteDetail;
 import com.krishagni.catissueplus.core.administrative.events.InstituteQueryCriteria;
+import com.krishagni.catissueplus.core.administrative.events.InstituteSummary;
 import com.krishagni.catissueplus.core.administrative.repository.InstituteListCriteria;
 import com.krishagni.catissueplus.core.administrative.services.InstituteService;
 import com.krishagni.catissueplus.core.biospecimen.repository.DaoFactory;
@@ -40,12 +41,12 @@ public class InstituteServiceImpl implements InstituteService {
 	
 	@Override
 	@PlusTransactional
-	public ResponseEvent<List<InstituteDetail>> getInstitutes(RequestEvent<InstituteListCriteria> req) {
+	public ResponseEvent<List<InstituteSummary>> getInstitutes(RequestEvent<InstituteListCriteria> req) {
 		try {
 			InstituteListCriteria crit = req.getPayload();
+			List<Institute> institutes = daoFactory.getInstituteDao().getInstitutes(crit);
 			
-			List<Institute> institutes = daoFactory.getInstituteDao().getInstitutes(crit);			
-			return ResponseEvent.response(InstituteDetail.from(institutes));
+			return ResponseEvent.response(InstituteSummary.from(institutes, crit.includeStat()));
 		} catch (OpenSpecimenException ose) {
 			return ResponseEvent.error(ose);
 		} catch (Exception e) {

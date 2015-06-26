@@ -58,7 +58,10 @@ public class SitesController {
 			int startAt,
 			
 			@RequestParam(value = "maxResults", required = false, defaultValue = "100") 
-			int maxResults
+			int maxResults,
+
+			@RequestParam(value = "includeStats", required = false, defaultValue = "false")
+			boolean includeStats
 			) {
 		
 		SiteListCriteria crit = new SiteListCriteria()
@@ -68,7 +71,8 @@ public class SitesController {
 			.operation(operation)
 			.institute(institute)
 			.startAt(startAt)
-			.maxResults(maxResults);
+			.maxResults(maxResults)
+			.includeStat(includeStats);
 		
 		RequestEvent<SiteListCriteria> req = new RequestEvent<SiteListCriteria>(crit);
 		ResponseEvent<List<SiteDetail>> resp = siteService.getSites(req);

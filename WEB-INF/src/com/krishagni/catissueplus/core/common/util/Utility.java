@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -20,7 +21,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import au.com.bytecode.opencsv.CSVWriter;
-
 import com.krishagni.catissueplus.core.common.PdfUtil;
 
 public class Utility {
@@ -169,6 +169,12 @@ public class Utility {
 		} catch (IOException e) {
 			throw new RuntimeException("Error getting file text", e);
 		}	
+	}
+
+	public static int getDateField(Date date, int type) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		return cal.get(type);
 	}
 
 }

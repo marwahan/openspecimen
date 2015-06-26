@@ -1,16 +1,20 @@
 
 package com.krishagni.catissueplus.core.administrative.repository.impl;
 
-import static com.krishagni.catissueplus.core.common.util.Utility.numberToLong;
-
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
@@ -22,6 +26,9 @@ import com.krishagni.catissueplus.core.common.events.DependentEntityDetail;
 import com.krishagni.catissueplus.core.common.events.UserSummary;
 import com.krishagni.catissueplus.core.common.repository.AbstractDao;
 import com.krishagni.catissueplus.core.common.util.Status;
+import com.krishagni.catissueplus.core.common.util.Utility;
+
+import static com.krishagni.catissueplus.core.common.util.Utility.numberToLong;
 
 public class UserDaoImpl extends AbstractDao<User> implements UserDao {
 	
@@ -47,8 +54,8 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
 				.addOrder(Order.asc("u.firstName"));
 		
 		addSearchConditions(criteria, listCrit);
-		addProjectionFields(criteria);
-		return getUsers(criteria.list());
+		addProjectionFields(criteria, listCrit.includeStat());
+		return getUsers(criteria.list(), listCrit.includeStat());
 	}
 	
 	public List<User> getUsersByIds(List<Long> userIds) {
@@ -110,7 +117,7 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
 		
 		return getDependentEntities(rows);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public ForgotPasswordToken getFpToken(String token) {
 		List<ForgotPasswordToken> result = sessionFactory.getCurrentSession()
@@ -141,24 +148,53 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
 		sessionFactory.getCurrentSession().delete(token);
 	}
 	
-	private List<UserSummary> getUsers(List<Object[]> rows) {
+	private List<UserSummary> getUsers(List<Object[]> rows, boolean includeStat) {
 		List<UserSummary> result = new ArrayList<UserSummary>();
-		for (Object[] row : rows) {			
-			result.add(getUserSummary(row));			
+		Map<Long, UserSummary> userSummaryMap = new HashMap<Long, UserSummary>();
+
+		for (Object[] row : rows) {
+			UserSummary userSummary = getUserSummary(row, includeStat);
+			if (includeStat) {
+				userSummaryMap.put(userSummary.getId(), userSummary);
+			}
+			result.add(userSummary);
 		}
-		
+
+		if (!includeStat) {
+			return result;
+		}
+
+		List<Object[]> countRows  = getCpCount(userSummaryMap.keySet());
+		for (Object[] row : countRows) {
+			UserSummary userSummary = userSummaryMap.get((Long)row[0]);
+			userSummary.setCpCount(((Number)row[1]).intValue() + ((Number) row[2]).intValue());
+		}
 		return result;		
 	}
 
-	private UserSummary getUserSummary(Object[] row) {
+	private UserSummary getUserSummary(Object[] row, boolean includeStat) {
 		UserSummary userSummary = new UserSummary();
 		userSummary.setId(numberToLong(row[0]));
 		userSummary.setFirstName((String)row[1]);
 		userSummary.setLastName((String)row[2]);
 		userSummary.setLoginName((String)row[3]);
-		return userSummary;		
+		if (includeStat) {
+			Date creationDate = (Date) row[4];
+			if (creationDate != null) {
+				userSummary.setSince(Utility.getDateField(creationDate, Calendar.YEAR));
+			}
+		}
+		return userSummary;
 	}
-	
+
+	private List<Object[]> getCpCount(Set<Long> userIds) {
+		return sessionFactory.getCurrentSession()
+				.getNamedQuery(GET_CP_COUNT)
+				.setParameterList("userIds", userIds)
+				.list();
+
+	}
+
 	@SuppressWarnings("unchecked")
 	private List<User> executeGetUserByLoginNameHql(String hql, String loginName, String domainName) {
 		return sessionFactory.getCurrentSession()
@@ -234,14 +270,18 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
 			.add(Restrictions.eq("institute.name", instituteName));
 	}
 
-	private void addProjectionFields(Criteria criteria) {
-		criteria.setProjection(Projections.distinct(
-				Projections.projectionList()
-					.add(Projections.property("u.id"), "id")
-					.add(Projections.property("u.firstName"), "firstName")
-					.add(Projections.property("u.lastName"), "lastName")
-					.add(Projections.property("u.loginName"), "loginName")
-		));
+	private void addProjectionFields(Criteria criteria, boolean includeStat) {
+		ProjectionList projectionList = Projections.projectionList()
+				.add(Projections.property("u.id"), "id")
+				.add(Projections.property("u.firstName"), "firstName")
+				.add(Projections.property("u.lastName"), "lastName")
+				.add(Projections.property("u.loginName"), "loginName");
+
+		if (includeStat) {
+			projectionList.add(Projections.property("u.creationDate"), "creationDate");
+		}
+
+		criteria.setProjection(Projections.distinct(projectionList));
 	}
 	
 	private List<DependentEntityDetail> getDependentEntities(List<Object[]> rows) {
@@ -264,8 +304,10 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
 	
 	private static final String FQN = User.class.getName();
 
-	private static final String GET_DEPENDENT_ENTITIES = FQN + ".getDependentEntities"; 
-	
+	private static final String GET_DEPENDENT_ENTITIES = FQN + ".getDependentEntities";
+
+	private static final String GET_CP_COUNT = FQN + ".getCpCount";
+
 	private static final String TOKEN_FQN = ForgotPasswordToken.class.getName();
 	
 	private static final String GET_FP_TOKEN_BY_USER = TOKEN_FQN + ".getFpTokenByUser";

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.krishagni.catissueplus.core.administrative.domain.DistributionOrder;
 import com.krishagni.catissueplus.core.administrative.domain.DistributionProtocol;
 import com.krishagni.catissueplus.core.administrative.domain.User;
 import com.krishagni.catissueplus.core.common.events.UserSummary;
@@ -27,6 +28,8 @@ public class DistributionProtocolDetail {
 	private Date endDate;
 
 	private String activityStatus;
+
+	private int distributedSpecimensCount;
 
 	public Long getId() {
 		return id;
@@ -100,7 +103,19 @@ public class DistributionProtocolDetail {
 		this.activityStatus = activityStatus;
 	}
 
+	public int getDistributedSpecimensCount() {
+		return distributedSpecimensCount;
+	}
+
+	public void setDistributedSpecimensCount(int distributedSpecimensCount) {
+		this.distributedSpecimensCount = distributedSpecimensCount;
+	}
+
 	public static DistributionProtocolDetail from(DistributionProtocol distributionProtocol) {
+		return from(distributionProtocol, false);
+	}
+
+	public static DistributionProtocolDetail from(DistributionProtocol distributionProtocol,  boolean includeStats) {
 		DistributionProtocolDetail details = new DistributionProtocolDetail();
 		details.setShortTitle(distributionProtocol.getShortTitle());
 		details.setId(distributionProtocol.getId());
@@ -111,6 +126,14 @@ public class DistributionProtocolDetail {
 		details.setInstituteName(distributionProtocol.getInstitute().getName());
 		details.setPrincipalInvestigator(getPrincipleInvestigatorInfo(distributionProtocol.getPrincipalInvestigator()));
 		details.setActivityStatus(distributionProtocol.getActivityStatus());
+
+		if (includeStats) {
+			int distributedSpecimensCount = 0;
+			for (DistributionOrder order : distributionProtocol.getDistributionOrders()) {
+				distributedSpecimensCount += order.getOrderItems().size();
+			}
+			details.setDistributedSpecimensCount(distributedSpecimensCount);
+		}
 		return details;
 	}
 
@@ -118,11 +141,11 @@ public class DistributionProtocolDetail {
 		return UserSummary.from(principleInvestigator);
 	}
 	
-	public static List<DistributionProtocolDetail> from(List<DistributionProtocol> distributionProtocols) {
+	public static List<DistributionProtocolDetail> from(List<DistributionProtocol> distributionProtocols, boolean includeStats) {
 		List<DistributionProtocolDetail> list = new ArrayList<DistributionProtocolDetail>();
 		
 		for (DistributionProtocol dp : distributionProtocols) {
-			list.add(from(dp));
+			list.add(from(dp, includeStats));
 		}
 		
 		return list;

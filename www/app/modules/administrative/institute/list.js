@@ -3,7 +3,7 @@ angular.module('os.administrative.institute.list', ['os.administrative.models'])
 
     function init() {
       $scope.instituteFilterOpts = {};
-      loadInstitutes();
+      loadInstitutes({includeStats: true});
       Util.filter($scope, 'instituteFilterOpts', loadInstitutes);
     }
 

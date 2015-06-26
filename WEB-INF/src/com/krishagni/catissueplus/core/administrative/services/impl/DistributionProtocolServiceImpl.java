@@ -16,12 +16,9 @@ import com.krishagni.catissueplus.core.common.access.AccessCtrlMgr;
 import com.krishagni.catissueplus.core.common.errors.ErrorType;
 import com.krishagni.catissueplus.core.common.errors.OpenSpecimenException;
 import com.krishagni.catissueplus.core.common.events.DependentEntityDetail;
-import com.krishagni.catissueplus.core.common.events.Operation;
 import com.krishagni.catissueplus.core.common.events.RequestEvent;
-import com.krishagni.catissueplus.core.common.events.Resource;
 import com.krishagni.catissueplus.core.common.events.ResponseEvent;
 import com.krishagni.catissueplus.core.common.util.AuthUtil;
-import com.krishagni.rbac.common.errors.RbacErrorCode;
 
 public class DistributionProtocolServiceImpl implements DistributionProtocolService {
 	private DaoFactory daoFactory;
@@ -40,7 +37,7 @@ public class DistributionProtocolServiceImpl implements DistributionProtocolServ
 	@PlusTransactional
 	public ResponseEvent<List<DistributionProtocolDetail>> getDistributionProtocols(RequestEvent<DpListCriteria> req) {
 		try {
-			DpListCriteria crit = req.getPayload();			
+			DpListCriteria crit = req.getPayload();
 			AccessCtrlMgr.getInstance().ensureReadDpRights();
 			if (!AuthUtil.isAdmin()) {
 				User user = daoFactory.getUserDao().getById(AuthUtil.getCurrentUser().getId());
@@ -49,7 +46,7 @@ public class DistributionProtocolServiceImpl implements DistributionProtocolServ
 			
 			List<DistributionProtocol> dps = 
 					daoFactory.getDistributionProtocolDao().getDistributionProtocols(crit);
-			return ResponseEvent.response(DistributionProtocolDetail.from(dps));
+			return ResponseEvent.response(DistributionProtocolDetail.from(dps, crit.includeStat()));
 		} catch (OpenSpecimenException ose) {
 			return ResponseEvent.error(ose);
 		} catch (Exception e) {

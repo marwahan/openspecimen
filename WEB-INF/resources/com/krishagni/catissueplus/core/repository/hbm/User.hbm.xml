@@ -70,7 +70,7 @@
           'collection_protocol' as entityName, count(cp.identifier) as count 
         from 
           catissue_collection_protocol cp
-          left join catissue_coll_coordinators cc on cc.collection_protocol_id = cp.identifier
+          left join catissue_coll_coordinators cc on cc.collection_protocol_id = cp.identifier and cp.principal_investigator_id != :userId
         where 
           cp.activity_status != 'Disabled' and
           (cp.principal_investigator_id = :userId or cc.user_id = :userId)
@@ -85,5 +85,22 @@
       where 
         de.count > 0
     </sql-query>
+
+    <sql-query name="getCpCount">
+      <return-scalar column="userId" type="long"/>
+      <return-scalar column="cpCount" type="int"/>
+      <return-scalar column="ccCount" type="int"/>
+      select
+        user.identifier as userId, count(cp.identifier) as cpCount, count(cc.collection_protocol_id) as ccCount
+      from
+        catissue_user user
+      left join catissue_collection_protocol cp on cp.principal_investigator_id = user.identifier
+      left join catissue_coll_coordinators cc on cc.user_id = user.identifier
+      where
+        user.identifier in (:userIds)
+      group by
+        user.identifier
+    </sql-query>
+
   </class>
 </hibernate-mapping>

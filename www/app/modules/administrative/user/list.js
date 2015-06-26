@@ -67,7 +67,7 @@ angular.module('os.administrative.user.list', ['os.administrative.models'])
     }
 
     function loadUsers(filterOpts) {
-      User.query(filterOpts).then(function(result) {
+      User.query({includeStats:true}, filterOpts).then(function(result) {
         if (!$scope.users && result.length > 12) {
           //
           // Show search options when # of users are more than 12

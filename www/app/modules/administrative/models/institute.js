@@ -49,9 +49,11 @@ angular.module('os.administrative.models.institute', ['os.common.models'])
     }
 
     Institute.getByName = function (instituteName) {
-      return Institute.query({name : instituteName, exactMatch : true})
-        .then(function(result) {
-          return result ? result[0] : null;
+      return $http.get(Institute.url() + 'byname?name=' + instituteName).then(
+        function(result) {
+              console.warn(result.name);
+
+          return result ? result.data : null;
         });
     }
 

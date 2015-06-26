@@ -8,7 +8,7 @@ angular.module('os.administrative.site.list', ['os.administrative.models'])
     }
 
     function loadSites(filterOpts) {
-      Site.query(filterOpts).then(
+      Site.query({includeStats:true}, filterOpts).then(
         function(siteList) {
           $scope.siteList = siteList;
         }

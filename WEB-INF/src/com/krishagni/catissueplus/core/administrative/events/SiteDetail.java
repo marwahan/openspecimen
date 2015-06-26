@@ -30,6 +30,8 @@ public class SiteDetail extends AttributeModifiedSupport {
 
 	private String activityStatus;
 
+	private int cpCount;
+
 	public Long getId() {
 		return id;
 	}
@@ -94,7 +96,19 @@ public class SiteDetail extends AttributeModifiedSupport {
 		this.address = address;
 	}
 
+	public int getCpCount() {
+		return cpCount;
+	}
+
+	public void setCpCount(int cpCount) {
+		this.cpCount = cpCount;
+	}
+
 	public static SiteDetail from(Site site) {
+		return from(site, false);
+	}
+
+	public static SiteDetail from(Site site, boolean includeStats) {
 		SiteDetail siteDto = new SiteDetail();
 		siteDto.setId(site.getId());
 		siteDto.setName(site.getName());
@@ -104,10 +118,13 @@ public class SiteDetail extends AttributeModifiedSupport {
 		siteDto.setActivityStatus(site.getActivityStatus());
 		siteDto.setAddress(site.getAddress());
 		siteDto.setCoordinators(UserSummary.from(site.getCoordinators()));
+		if (includeStats) {
+			siteDto.setCpCount(site.getCollectionProtocols().size());
+		}
 		return siteDto;
 	}
 	
-	public static List<SiteDetail> from(Collection<Site> sites) {
+	public static List<SiteDetail> from(Collection<Site> sites, boolean includeStats) {
 		List<SiteDetail> result = new ArrayList<SiteDetail>();
 		
 		if (CollectionUtils.isEmpty(sites)) {
@@ -115,7 +132,7 @@ public class SiteDetail extends AttributeModifiedSupport {
 		}
 		
 		for (Site site : sites) {
-			result.add(from(site));
+			result.add(from(site, includeStats));
 		}
 		
 		return result;

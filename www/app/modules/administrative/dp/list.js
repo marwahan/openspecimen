@@ -9,7 +9,7 @@ angular.module('os.administrative.dp.list', ['os.administrative.models'])
     }
     
     function loadDps(filterOpts) {
-      DistributionProtocol.query(filterOpts).then(function(result) {
+      DistributionProtocol.query({includeStats:true}, filterOpts).then(function(result) {
         $scope.distributionProtocols = result; 
       });
     }

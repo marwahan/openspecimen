@@ -65,7 +65,7 @@ public class SiteServiceImpl implements SiteService {
 				sites = getAccessibleSites(req.getPayload());
 			} 
 			
-			return ResponseEvent.response(SiteDetail.from(sites));
+			return ResponseEvent.response(SiteDetail.from(sites, req.getPayload().includeStat()));
 		} catch(OpenSpecimenException ose) {
 			return ResponseEvent.error(ose);
 		} catch(Exception ex) {

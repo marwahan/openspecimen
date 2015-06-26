@@ -23,7 +23,11 @@ public class UserSummary {
 	
 	private String emailAddress;
 
-	private Boolean admin; 
+	private Boolean admin;
+
+	private int cpCount;
+
+	private int since;
 
 	public Long getId() {
 		return id;
@@ -81,6 +85,22 @@ public class UserSummary {
 		this.admin = admin;
 	}
 
+	public int getCpCount() {
+		return cpCount;
+	}
+
+	public void setCpCount(int cpCount) {
+		this.cpCount = cpCount;
+	}
+
+	public int getSince() {
+		return since;
+	}
+
+	public void setSince(int since) {
+		this.since = since;
+	}
+
 	public static UserSummary from(User user) {
 		UserSummary userSummary = new UserSummary();
 		userSummary.setId(user.getId());
@@ -90,6 +110,7 @@ public class UserSummary {
 		userSummary.setDomain(user.getAuthDomain().getName());
 		userSummary.setEmailAddress(user.getEmailAddress());
 		userSummary.setAdmin(user.isAdmin());
+
 		return userSummary;
 	}
 	
