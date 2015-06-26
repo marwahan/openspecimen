@@ -51,8 +51,6 @@ angular.module('os.administrative.models.institute', ['os.common.models'])
     Institute.getByName = function (instituteName) {
       return $http.get(Institute.url() + 'byname?name=' + instituteName).then(
         function(result) {
-              console.warn(result.name);
-
           return result ? result.data : null;
         });
     }
