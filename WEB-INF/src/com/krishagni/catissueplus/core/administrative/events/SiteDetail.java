@@ -105,26 +105,19 @@ public class SiteDetail extends AttributeModifiedSupport {
 	}
 
 	public static SiteDetail from(Site site) {
-		return from(site, false);
-	}
-
-	public static SiteDetail from(Site site, boolean includeStats) {
-		SiteDetail siteDto = new SiteDetail();
-		siteDto.setId(site.getId());
-		siteDto.setName(site.getName());
-		siteDto.setInstituteName(site.getInstitute().getName());
-		siteDto.setCode(site.getCode());
-		siteDto.setType(site.getType());
-		siteDto.setActivityStatus(site.getActivityStatus());
-		siteDto.setAddress(site.getAddress());
-		siteDto.setCoordinators(UserSummary.from(site.getCoordinators()));
-		if (includeStats) {
-			siteDto.setCpCount(site.getCollectionProtocols().size());
-		}
-		return siteDto;
+		SiteDetail detail = new SiteDetail();
+		detail.setId(site.getId());
+		detail.setName(site.getName());
+		detail.setInstituteName(site.getInstitute().getName());
+		detail.setCode(site.getCode());
+		detail.setType(site.getType());
+		detail.setActivityStatus(site.getActivityStatus());
+		detail.setAddress(site.getAddress());
+		detail.setCoordinators(UserSummary.from(site.getCoordinators()));
+		return detail;
 	}
 	
-	public static List<SiteDetail> from(Collection<Site> sites, boolean includeStats) {
+	public static List<SiteDetail> from(Collection<Site> sites) {
 		List<SiteDetail> result = new ArrayList<SiteDetail>();
 		
 		if (CollectionUtils.isEmpty(sites)) {
@@ -132,10 +125,9 @@ public class SiteDetail extends AttributeModifiedSupport {
 		}
 		
 		for (Site site : sites) {
-			result.add(from(site, includeStats));
+			result.add(from(site));
 		}
 		
 		return result;
 	}
-
 }

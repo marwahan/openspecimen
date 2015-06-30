@@ -3,6 +3,7 @@ package com.krishagni.catissueplus.core.common.events;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
@@ -27,7 +28,7 @@ public class UserSummary {
 
 	private int cpCount;
 
-	private int since;
+	private Date creationDate;
 
 	public Long getId() {
 		return id;
@@ -93,12 +94,12 @@ public class UserSummary {
 		this.cpCount = cpCount;
 	}
 
-	public int getSince() {
-		return since;
+	public Date getCreationDate() {
+		return creationDate;
 	}
 
-	public void setSince(int since) {
-		this.since = since;
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 
 	public static UserSummary from(User user) {
@@ -110,6 +111,7 @@ public class UserSummary {
 		userSummary.setDomain(user.getAuthDomain().getName());
 		userSummary.setEmailAddress(user.getEmailAddress());
 		userSummary.setAdmin(user.isAdmin());
+		userSummary.setCreationDate(user.getCreationDate());
 
 		return userSummary;
 	}

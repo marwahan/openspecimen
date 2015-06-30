@@ -170,11 +170,4 @@ public class Utility {
 			throw new RuntimeException("Error getting file text", e);
 		}	
 	}
-
-	public static int getDateField(Date date, int type) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		return cal.get(type);
-	}
-
 }

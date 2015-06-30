@@ -18,13 +18,9 @@ public class InstituteDetail extends InstituteSummary {
 	}
 
 	public static InstituteDetail from(Institute institute) {
-  		return from(institute, false);
-	}
-
-	public static InstituteDetail from(Institute institute, boolean includeStats) {
 		InstituteDetail detail = new InstituteDetail();
-		InstituteDetail.transform(institute, detail, includeStats);
 
+		InstituteSummary.transform(institute, detail);
 		detail.setDepartments(DepartmentDetail.from(institute.getDepartments()));
 		return detail;
 	}

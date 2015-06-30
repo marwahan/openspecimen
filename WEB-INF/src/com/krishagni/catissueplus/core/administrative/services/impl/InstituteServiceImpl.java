@@ -43,10 +43,8 @@ public class InstituteServiceImpl implements InstituteService {
 	@PlusTransactional
 	public ResponseEvent<List<InstituteSummary>> getInstitutes(RequestEvent<InstituteListCriteria> req) {
 		try {
-			InstituteListCriteria crit = req.getPayload();
-			List<Institute> institutes = daoFactory.getInstituteDao().getInstitutes(crit);
-			
-			return ResponseEvent.response(InstituteSummary.from(institutes, crit.includeStat()));
+			InstituteListCriteria listCrit = req.getPayload();
+			return ResponseEvent.response(daoFactory.getInstituteDao().getInstitutes(listCrit));
 		} catch (OpenSpecimenException ose) {
 			return ResponseEvent.error(ose);
 		} catch (Exception e) {

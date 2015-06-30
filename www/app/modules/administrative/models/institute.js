@@ -48,11 +48,12 @@ angular.module('os.administrative.models.institute', ['os.common.models'])
       return this;
     }
 
-    Institute.getByName = function (instituteName) {
-      return $http.get(Institute.url() + 'byname?name=' + instituteName).then(
+    Institute.getByName = function (name) {
+      return $http.get(Institute.url() + 'byname', {params: {name: name}}).then(
         function(result) {
-          return result ? result.data : null;
-        });
+          return new Institute(result.data);
+        }
+      );
     }
 
     return Institute;

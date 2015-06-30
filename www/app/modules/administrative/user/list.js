@@ -7,12 +7,12 @@ angular.module('os.administrative.user.list', ['os.administrative.models'])
     var pvInit = false;
 
     function init() {
-      loadUsers();
+      loadUsers({includeStats: true});
       initPvsAndFilterOpts();
     }
   
     function initPvsAndFilterOpts() {
-      $scope.userFilterOpts = {};
+      $scope.userFilterOpts = {includeStats: true};
       $scope.$on('osRightDrawerOpen', function() {
         if (pvInit) {
           return;
@@ -67,7 +67,7 @@ angular.module('os.administrative.user.list', ['os.administrative.models'])
     }
 
     function loadUsers(filterOpts) {
-      User.query({includeStats:true}, filterOpts).then(function(result) {
+      User.query(filterOpts).then(function(result) {
         if (!$scope.users && result.length > 12) {
           //
           // Show search options when # of users are more than 12

@@ -2,13 +2,13 @@ angular.module('os.administrative.site.list', ['os.administrative.models'])
   .controller('SiteListCtrl', function($scope, $state, Site, Util) {
 
     function init() {
-      $scope.siteFilterOpts = {};
-      loadSites();
+      $scope.siteFilterOpts = {includeStats: true};
+      loadSites($scope.siteFilterOpts);
       Util.filter($scope, 'siteFilterOpts', loadSites);
     }
 
     function loadSites(filterOpts) {
-      Site.query({includeStats:true}, filterOpts).then(
+      Site.query(filterOpts).then(
         function(siteList) {
           $scope.siteList = siteList;
         }

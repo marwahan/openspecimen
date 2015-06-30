@@ -61,8 +61,7 @@ public class SitesController {
 			int maxResults,
 
 			@RequestParam(value = "includeStats", required = false, defaultValue = "false")
-			boolean includeStats
-			) {
+			boolean includeStats) {
 		
 		SiteListCriteria crit = new SiteListCriteria()
 			.query(name)

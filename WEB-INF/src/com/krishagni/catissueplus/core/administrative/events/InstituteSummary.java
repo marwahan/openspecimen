@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 
-import com.krishagni.catissueplus.core.administrative.domain.Department;
 import com.krishagni.catissueplus.core.administrative.domain.Institute;
 
 public class InstituteSummary {
@@ -17,9 +16,9 @@ public class InstituteSummary {
 
 	private String activityStatus;
 
-	private int departmentCount;
+	private int departmentsCount;
 
-	private int userCount;
+	private int usersCount;
 
 	public Long getId() {
 		return id;
@@ -45,45 +44,35 @@ public class InstituteSummary {
 		this.activityStatus = activityStatus;
 	}
 
-	public int getDepartmentCount() {
-		return departmentCount;
+	public int getDepartmentsCount() {
+		return departmentsCount;
 	}
 
-	public void setDepartmentCount(int departmentCount) {
-		this.departmentCount = departmentCount;
+	public void setDepartmentsCount(int departmentsCount) {
+		this.departmentsCount = departmentsCount;
 	}
 
-	public int getUserCount() {
-		return userCount;
+	public int getUsersCount() {
+		return usersCount;
 	}
 
-	public void setUserCount(int userCount) {
-		this.userCount = userCount;
+	public void setUsersCount(int usersCount) {
+		this.usersCount = usersCount;
 	}
 
-	protected static void transform(Institute institute, InstituteSummary summary, boolean includeStat) {
+	protected static void transform(Institute institute, InstituteSummary summary) {
 		summary.setId(institute.getId());
 		summary.setName(institute.getName());
 		summary.setActivityStatus(institute.getActivityStatus());
-
-		if (includeStat) {
-			summary.setDepartmentCount(institute.getDepartments().size());
-
-			int userCount = 0;
-			for (Department dept : institute.getDepartments()) {
-				userCount += dept.getUsers().size();
-			}
-			summary.setUserCount(userCount);
-		}
 	}
 
-	public static InstituteSummary from(Institute institute, boolean includeStats) {
+	public static InstituteSummary from(Institute institute) {
 		InstituteSummary summary = new InstituteSummary();
-		transform(institute, summary, includeStats);
+		transform(institute, summary);
 		return summary;
 	}
 
-	public static List<InstituteSummary> from(List<Institute> institutes, boolean includeStats) {
+	public static List<InstituteSummary> from(List<Institute> institutes) {
 		List<InstituteSummary> result = new ArrayList<InstituteSummary>();
 
 		if (CollectionUtils.isEmpty(institutes)) {
@@ -91,7 +80,7 @@ public class InstituteSummary {
 		}
 
 		for (Institute institute : institutes) {
-			result.add(from(institute, includeStats));
+			result.add(from(institute));
 		}
 
 		return result;

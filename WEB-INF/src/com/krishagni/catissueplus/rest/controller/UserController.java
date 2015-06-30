@@ -68,8 +68,7 @@ public class UserController {
 			String activityStatus,
 
 			@RequestParam(value = "includeStats", required = false, defaultValue = "false")
-			boolean includeStats
-			) {
+			boolean includeStats) {
 		
 		UserListCriteria crit = new UserListCriteria()
 			.startAt(start)

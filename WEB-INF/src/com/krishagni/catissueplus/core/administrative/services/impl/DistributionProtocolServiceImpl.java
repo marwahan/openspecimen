@@ -1,7 +1,11 @@
 
 package com.krishagni.catissueplus.core.administrative.services.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import com.krishagni.catissueplus.core.administrative.domain.DistributionProtocol;
 import com.krishagni.catissueplus.core.administrative.domain.User;
@@ -44,9 +48,14 @@ public class DistributionProtocolServiceImpl implements DistributionProtocolServ
 				crit.instituteId(user.getInstitute().getId());
 			}
 			
-			List<DistributionProtocol> dps = 
-					daoFactory.getDistributionProtocolDao().getDistributionProtocols(crit);
-			return ResponseEvent.response(DistributionProtocolDetail.from(dps, crit.includeStat()));
+			List<DistributionProtocol> dps = daoFactory.getDistributionProtocolDao().getDistributionProtocols(crit);
+			List<DistributionProtocolDetail> result = DistributionProtocolDetail.from(dps);
+			
+			if (crit.includeStat()) {
+				addDpStats(result);
+			}
+						
+			return ResponseEvent.response(result);
 		} catch (OpenSpecimenException ose) {
 			return ResponseEvent.error(ose);
 		} catch (Exception e) {
@@ -157,6 +166,24 @@ public class DistributionProtocolServiceImpl implements DistributionProtocolServ
 		} catch (Exception e) {
 			return ResponseEvent.serverError(e);
 		}
+	}
+	
+	private void addDpStats(List<DistributionProtocolDetail> dps) {
+		if (CollectionUtils.isEmpty(dps)) {
+			return;
+		}
+		
+		Map<Long, DistributionProtocolDetail> dpMap = new HashMap<Long, DistributionProtocolDetail>();
+		for (DistributionProtocolDetail dp : dps) {
+			dpMap.put(dp.getId(), dp);
+		}
+				
+		Map<Long, Integer> countMap = daoFactory.getDistributionProtocolDao()
+				.getSpecimensCountByDpIds(dpMap.keySet());
+		
+		for (Map.Entry<Long, Integer> count : countMap.entrySet()) {
+			dpMap.get(count.getKey()).setDistributedSpecimensCount(count.getValue());
+		}		
 	}
 	
 	private void ensureUniqueConstraints(DistributionProtocol newDp, DistributionProtocol existingDp) {

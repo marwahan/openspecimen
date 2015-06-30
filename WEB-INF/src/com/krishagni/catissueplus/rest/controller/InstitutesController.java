@@ -52,8 +52,7 @@ public class InstitutesController {
 			boolean exactMatch,
 
 			@RequestParam(value = "includeStats", required = false, defaultValue = "false")
-			boolean includeStats
-			) {
+			boolean includeStats) {
 		
 		InstituteListCriteria crit  = new InstituteListCriteria()
 				.query(name)
@@ -86,16 +85,13 @@ public class InstitutesController {
 	@RequestMapping(method = RequestMethod.GET, value="/byname")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	public InstituteDetail getInstituteByName(
-			@RequestParam(value = "name", required = true)
-			String name) {
+	public InstituteDetail getInstituteByName(@RequestParam(value = "name", required = true) String name) {		
 		InstituteQueryCriteria crit = new InstituteQueryCriteria();
 		crit.setName(name);
 
 		RequestEvent<InstituteQueryCriteria> req = new RequestEvent<InstituteQueryCriteria>(crit);
 		ResponseEvent<InstituteDetail> resp = instituteSvc.getInstitute(req);
 		resp.throwErrorIfUnsuccessful();
-
 		return resp.getPayload();
 	}
 
